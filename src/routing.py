@@ -21,6 +21,7 @@ json_data = pars_json("../data/json_rout.json")
 x_grid = json_data["grid_x"]
 y_grid = json_data["grid_y"]
 
+
 #Grid with zeros
 grid = [ ["0"] * y_grid for _ in range(x_grid)]
 
