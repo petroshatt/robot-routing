@@ -131,10 +131,109 @@ def algA():
 
   #Append last point
   path.append(curr_p)
-  print(path)
-  print("\n")
+  #print(path)
+  #print("\n")
+  return(path)
 
 
+#Random navigation with path memory
+def algB():
 
-algA()
+  path = []
+  curr_x = start_x
+  curr_y = start_y
+  curr_p = (curr_x, curr_y)
 
+  while (curr_p != (end_x, end_y)):
+
+    #Excluded moves
+    excl = []
+
+    #Exclude moves because of grid limits
+    if curr_y <= 1:
+      excl.append(1)
+    if curr_y >= y_grid:
+      excl.append(2)
+    if curr_x <=1:
+      excl.append(3)
+    if curr_x >= x_grid:
+      excl.append(4)
+
+    #Exclude moves because of obstacles
+    try:
+      if grid[curr_y+1-1][curr_x-1] == "1":
+        excl.append(2)
+    except:
+      pass
+
+    try:
+      if grid[curr_y-1-1][curr_x-1] == "1":
+        excl.append(1)
+    except:
+      pass
+
+    try:
+      if grid[curr_y-1][curr_x+1-1] == "1":
+        excl.append(4)
+    except:
+      pass
+
+    try:
+      if grid[curr_y-1][curr_x-1-1] == "1":
+        excl.append(3)
+    except:
+      pass
+
+    #Check if every move is excluded - meaning no moves available - then terminate
+    if 1 in excl and 2 in excl and 3 in excl and 4 in excl:
+      break
+
+    while True:
+
+      #Choose random move from the valid ones
+      move = choice([i for i in range(1,5) if i not in excl]) #1-UP 2-DOWN 3-LEFT 4-RIGHT
+
+      #Update next point based on move
+      if move == 1:
+        next_x = curr_x
+        next_y = curr_y-1
+        next_p = (next_x, next_y)
+      elif move == 2:
+        next_x = curr_x
+        next_y = curr_y+1
+        next_p = (next_x, next_y)
+      elif move == 3:
+        next_x = curr_x-1
+        next_y = curr_y
+        next_p = (next_x, next_y)
+      elif move == 4:
+        next_x = curr_x+1
+        next_y = curr_y
+        next_p = (next_x, next_y)
+
+      if len(path) > 0:
+        if next_p == path[-1]: #Checks just the previous point
+        #if next_p in path:    #Checks every previous point
+          if len(excl) == 3:    
+            break
+        else:
+          break
+      else:
+        break
+
+    #Append point on path list
+    path.append(curr_p)
+
+    #Update point - next is now current
+    curr_x = next_x
+    curr_y = next_y
+    curr_p = next_p
+
+  #Append last point
+  path.append(curr_p)
+  #print(path)
+  #print("\n")
+  return(path)
+
+
+print(algB())
