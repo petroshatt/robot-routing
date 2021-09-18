@@ -1,6 +1,7 @@
 import json
 import numpy
 import sys
+import collections
 from random import choice
 
 global json_data
@@ -16,6 +17,8 @@ def pars_json(file):
 
   return data
 
+
+possible_alg = ['BFS', 'A', 'B']
 
 json_data = pars_json("../data/json_rout.json")
 
@@ -35,12 +38,14 @@ for i in range(len(json_data["obstacle"])):
 #Start point and assign "S" to grid for start
 start_x = json_data["start_point"][0]
 start_y = json_data["start_point"][1]
+start_p = (start_x, start_y)
 
 grid[start_y - 1][start_x - 1] = "S"
 
 #End point and assign "E" to grid for end
 end_x = json_data["end_point"][0]
 end_y = json_data["end_point"][1]
+end_p = (end_x, end_y)
 
 grid[end_y - 1][end_x - 1] = "E"
 
@@ -51,7 +56,7 @@ print()
 ALG_FLAG = sys.argv[1]
 
 
-def alg():
+def randAlg():
 
   path = []
   curr_x = start_x
@@ -102,6 +107,7 @@ def alg():
     if 1 in excl and 2 in excl and 3 in excl and 4 in excl:
       break
 
+    #Algorithm B - Random navigation with path memory
     if ALG_FLAG == "B":
 
       while True:
@@ -137,7 +143,8 @@ def alg():
         else:
           break
 
-    else:
+    #Algorithm A - completely random navigation
+    elif ALG_FLAG == "A":
 
       #Choose random move from the valid ones
       move = choice([i for i in range(1,5) if i not in excl]) #1-UP 2-DOWN 3-LEFT 4-RIGHT
@@ -174,7 +181,71 @@ def alg():
   print()
 
 
+def bfs(grid, start):
+
+    wall, clear, goal = "1", "0", "E"
+    width, height = x_grid, y_grid
+
+    queue = collections.deque([[start]])
+    seen = set([start])
+    while queue:
+        path = queue.popleft()
+        x, y = path[-1]
+        if grid[y-1][x-1] == goal:
+            print(path)
+            print()
+        for x2, y2 in ((x+1,y), (x-1,y), (x,y+1), (x,y-1)):
+            if 0 <= x2 < width and 0 <= y2 < height and grid[y2][x2] != wall and (x2, y2) not in seen:
+                queue.append(path + [(x2, y2)])
+                seen.add((x2, y2))
+
+
+# def initJSON():
+
+#   init_json_str = json.dumps({
+#     "xdimension": x_grid,
+#     "ydimension": y_grid,
+#     "grid_size": 25,
+#     "label": "Robot Emulator",
+#     "obstacle": [],
+#     "robots": [],
+#     "robots_movements": [],
+#     "exits": [],
+#     "end": "false"
+#   })
+
+
+# def pathToJSON():
+
+#   json_str = json.dumps({"robots_movements":[{
+#     "robot_name": str(sys.argv[2]),
+#     "line_color": "("+ str(sys.argv[3]) + ")",
+#     "move":[]}
+#     ]})
+
+#   print(json_str)
+
+
+
 if __name__ == "__main__":
 
-  print("Algorithm " + ALG_FLAG + " is executed." + "\n")
-  alg()
+  if ALG_FLAG in possible_alg:
+    print("Algorithm " + ALG_FLAG + " is executed." + "\n")
+
+    #Algorithm B - Random navigation with path memory
+    if ALG_FLAG == "BFS":
+      bfs(grid, start_p)
+
+    else:
+      randAlg()
+
+  else:
+    print("Incorrent argument." + "\n")
+
+  #pathToJSON()
+
+
+
+
+
+
